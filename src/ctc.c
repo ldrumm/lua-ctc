@@ -13,7 +13,7 @@ static int constant_time_memeq(const void *s1, const void *s2, size_t len)
     int result = 0;
     for(size_t i = 0; i < len; i++)
         result |= x[i] ^ y[i];
-    return result == 0;
+    return result;
 }
 
 static int lconstant_time_memeq(lua_State *L)
@@ -21,15 +21,15 @@ static int lconstant_time_memeq(lua_State *L)
     size_t len_x;
     size_t len_y;
     if(lua_gettop(L) != 2){
-        return luaL_error("ctc requires exactly two arguments");
+        return luaL_error(L, "ctc requires exactly two arguments");
     }
     const char * x = lua_tolstring(L, 1, &len_x);
     const char * y = lua_tolstring(L, 2, &len_y);
 
     int len_neq = (len_x != len_y);
     size_t min = len_y ^ ((len_x ^ len_y) & -(len_x < len_y));
-
     lua_pushboolean(L, !(constant_time_memeq(x, y, min) | len_neq));
+
     return 1;
 }
 
